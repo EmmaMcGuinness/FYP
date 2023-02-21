@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">GrowWithSunglow</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_profile">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="propragator">Propragator</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="threeDays">Date</string>
+    <string name="daysAfter">Propagator</string>
+    <string name="add_a_new_block">Add a new Block</string>
+    <string name="planted">Variety</string>
+    <string name="block">Block</string>
+
+
+</resources>
