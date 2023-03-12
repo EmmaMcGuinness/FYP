@@ -1,4 +1,4 @@
-package com.project.growwithsunglow.ui.dashboard;
+package com.project.growwithsunglow.ui.home;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.project.growwithsunglow.BlockModel;
 import com.project.growwithsunglow.R;
 
 import java.util.ArrayList;
@@ -29,12 +28,12 @@ public class TempAdapter extends RecyclerView.Adapter<TempAdapter.MyViewHolder> 
 
     // Create new views (invoked by the layout manager)
     @Override
-    public TempAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        return new TempAdapter.MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_layout, null));
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_layout, null));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TempAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         AvgTemp eventModel = myDataSet.get(position);
 
         holder.date.setText(eventModel.getDate());

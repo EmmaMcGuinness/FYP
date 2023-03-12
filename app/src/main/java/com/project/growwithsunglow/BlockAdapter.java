@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.project.growwithsunglow.ui.dashboard.BlockDetails;
+import com.project.growwithsunglow.ui.home.BlockDetails;
 
 import java.util.ArrayList;
 

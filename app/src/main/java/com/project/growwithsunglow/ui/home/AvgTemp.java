@@ -1,4 +1,4 @@
-package com.project.growwithsunglow.ui.dashboard;
+package com.project.growwithsunglow.ui.home;
 
 public class AvgTemp {
     int blockNo;

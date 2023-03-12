@@ -1,78 +1,73 @@
 package com.project.growwithsunglow.ui.home;
-
-import android.content.Context;
+import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.growwithsunglow.BlockAdapter;
+import com.project.growwithsunglow.BlockDetailsAdapter;
+import com.project.growwithsunglow.BlockDetailsModel;
 import com.project.growwithsunglow.BlockModel;
 import com.project.growwithsunglow.R;
-import com.project.growwithsunglow.databinding.FragmentHomeBinding;
+import com.project.growwithsunglow.databinding.FragmentDashboardBinding;
 
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 public class HomeFragment extends Fragment {
-    private RecyclerView recyclerView;
+
+    private FragmentDashboardBinding binding;
+    Button table, realtime;
     private FloatingActionButton floatingActionButton;
-    Context mContext;
+    private BlockDetailsAdapter blockDetailsAdapter;
     private BlockAdapter blockAdapter;
+    private RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
+    private DatePickerDialog picker;
     private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-    private FirebaseAuth mAuth;
-    private FirebaseUser user;
-    private String userID;
-    private FragmentHomeBinding binding;
-    private final ArrayList<BlockModel> myDataSet = new ArrayList<>();
+    private final ArrayList<BlockModel> dataSet = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
+        HomeViewModel dashboardViewModel =
                 new ViewModelProvider(this).get(HomeViewModel.class);
 
-      /*  binding = FragmentHomeBinding.inflate(inflater, container, false);
+       /* binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();*/
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview2);
         recyclerView.setHasFixedSize(true);
 
         layoutManager = new LinearLayoutManager(view.getContext());
         recyclerView.setLayoutManager(layoutManager);
-
-
-
-
         addBlocksToRecycler();
-
-        mAuth = FirebaseAuth.getInstance();
-
 
         floatingActionButton = view.findViewById(R.id.add);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -84,13 +79,6 @@ public class HomeFragment extends Fragment {
         });
 
         return view;
-    }
-
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
     }
 
     private void addBlock() {
@@ -108,6 +96,24 @@ public class HomeFragment extends Fragment {
         EditText editPropagator = myView.findViewById(R.id.editTextPropagator);
         EditText editDate = myView.findViewById(R.id.editTextDate);
 
+        editDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Calendar calendar = Calendar.getInstance();
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                int month = calendar.get(Calendar.MONTH);
+                int year = calendar.get(Calendar.YEAR);
+
+                picker = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                        editDate.setText(dayOfMonth + "/"+ (month + 1)+ "/"+ year);
+
+                    }
+                }, year, month, day);
+                picker.show();
+            }
+        });
         Button save = myView.findViewById(R.id.save_button);
         Button cancel = myView.findViewById(R.id.cancel_button);
 
@@ -128,22 +134,22 @@ public class HomeFragment extends Fragment {
                 String date = editDate.getText().toString().trim();
 
                 if (block.isEmpty()) {
-                    editBlock.setError("Event is required");
+                    editBlock.setError("Block Number is required");
                     editBlock.requestFocus();
                     return;
                 }
                 if (variety.isEmpty()) {
-                    editVariety.setError("Description is required");
+                    editVariety.setError("Variety is required");
                     editVariety.requestFocus();
                     return;
                 }
                 if (propagator.isEmpty()) {
-                    editPropagator.setError("Deadline is required");
+                    editPropagator.setError("Propagator is required");
                     editPropagator.requestFocus();
                     return;
                 }
                 if (date == null) {
-                    editDate.setError("Deadline is required");
+                    editDate.setError("Date Planted is required");
                     editDate.requestFocus();
                     return;
                 }
@@ -170,15 +176,22 @@ public class HomeFragment extends Fragment {
 
         });
     }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     private void addBlocksToRecycler() {
-
-
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                myDataSet.clear();
+                dataSet.clear();
+
 
                 for (DataSnapshot events : snapshot.child("Blocks").getChildren()) {
                     final String getBlock = events.child("block").getValue(String.class);
@@ -189,10 +202,10 @@ public class HomeFragment extends Fragment {
                     BlockModel blockModel = new BlockModel(getBlock, getVariety, getPropagator, getDate);
                     blockModel.setKey(events.getKey());
 
-                    myDataSet.add(blockModel);
+                    dataSet.add(blockModel);
 
                 }
-                blockAdapter = new BlockAdapter(getActivity(), myDataSet);
+                blockAdapter = new BlockAdapter(getActivity(), dataSet);
                 recyclerView.setAdapter(blockAdapter);
             }
 
@@ -202,4 +215,6 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+
 }

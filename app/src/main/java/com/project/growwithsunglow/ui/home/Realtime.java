@@ -1,13 +1,10 @@
-package com.project.growwithsunglow.ui.dashboard;
-
+package com.project.growwithsunglow.ui.home;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,10 +22,7 @@ import com.project.growwithsunglow.R;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import cz.msebera.android.httpclient.Header;
 import jxl.Cell;
@@ -37,9 +31,7 @@ import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.read.biff.BiffException;
 
-public class BlockDetails extends AppCompatActivity {
-    TextView block, variety, propagator, planted, daysAfter, threeDays, gdhRequired;
-    String key = "";
+public class Realtime extends AppCompatActivity {
     RecyclerView recyclerView;
     AsyncHttpClient client;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -48,34 +40,9 @@ public class BlockDetails extends AppCompatActivity {
     String url;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.block_layout);
-
-        planted = findViewById(R.id.plantedCard);
-        daysAfter = findViewById(R.id.daysAfterCard);
-        threeDays = findViewById(R.id.threeDaysCard);
-        gdhRequired = findViewById(R.id.GDHRequiredCard);
-
-        Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
-            planted.setText(bundle.getString("Date"));
-        }
-
-        String plantedS = planted.getText().toString().trim();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-        Calendar cal = Calendar.getInstance();
-        try {
-            cal.setTime(sdf.parse(plantedS));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        cal.add(Calendar.DATE, 56);
-        String dateAfter = sdf.format(cal.getTime());
-        daysAfter.setText(dateAfter);
-        String gdhR = "1400";
-        gdhRequired.setText(gdhR);
+        setContentView(R.layout.realtime_layout);
 
         url = "https://github.com/EmmaMcGuinness/excelExample/blob/main/Block1Example.xls?raw=true";
 
@@ -84,18 +51,19 @@ public class BlockDetails extends AppCompatActivity {
         avgTempList = new ArrayList<>();
         client = new AsyncHttpClient();
 
+
     }
     private void downloadData(){
         client.get(url, new FileAsyncHttpResponseHandler(this) {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
-                Toast.makeText(BlockDetails.this, "Download Failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Realtime.this, "Download Failed", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, File file) {
-                Toast.makeText(BlockDetails.this, "File downloaded", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Realtime.this, "File downloaded", Toast.LENGTH_SHORT).show();
                 WorkbookSettings ws = new WorkbookSettings();
                 ws.setGCDisabled(true);
                 int blockNo = 1;
@@ -105,13 +73,9 @@ public class BlockDetails extends AppCompatActivity {
                         Sheet sheet = workbook.getSheet(0);
                         for(int i = 0; i < sheet.getRows(); i++){
                             Cell[] row = sheet.getRow(i);
-                            String date = row[1].getContents();
-                            int n = 5;
-                            String finalDate, finalTemp;
-                            finalDate = date.substring(0, date.length() - n);
+                            String date = row[0].getContents();
                             String temp = row[2].getContents();
-                            finalTemp = temp.substring(0, temp.length() - 3);
-                            AvgTemp avgTemp = new AvgTemp(finalTemp,finalDate,blockNo);
+                            AvgTemp avgTemp = new AvgTemp(temp,date,blockNo);
                             FirebaseDatabase.getInstance().getReference("AvgTemp").push()
                                     .setValue(avgTemp).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
@@ -120,7 +84,7 @@ public class BlockDetails extends AppCompatActivity {
                                                 //  Toast.makeText(Realtime.this, "Successfully added", Toast.LENGTH_SHORT).show();
 
                                             }else{
-                                                Toast.makeText(BlockDetails.this, "Not added", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(Realtime.this, "Not added", Toast.LENGTH_LONG).show();
                                             }
                                         }
                                     });
@@ -141,7 +105,7 @@ public class BlockDetails extends AppCompatActivity {
 
         recyclerView.setHasFixedSize(true);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(BlockDetails.this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(Realtime.this));
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -159,7 +123,7 @@ public class BlockDetails extends AppCompatActivity {
                     avgTempList.add(avgTemp);
 
                 }
-                recyclerView.setAdapter(new TempAdapter(BlockDetails.this, avgTempList));
+                recyclerView.setAdapter(new TempAdapter(Realtime.this, avgTempList));
 
             }
 
