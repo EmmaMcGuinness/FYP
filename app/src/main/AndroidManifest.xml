@@ -26,6 +26,9 @@
         <activity android:name=".User" />
         <activity android:name=".ui.profile.ProfileEdit"/>
         <activity android:name=".ui.home.BlockDetails"/>
+        <activity android:name=".ui.home.UpdateActivity"/>
+        <activity android:name=".ui.dashboard.Graph"/>
+        <activity android:name=".ForgotPassword"/>
         <activity android:name=".Login"
             android:exported="true">
         <intent-filter>

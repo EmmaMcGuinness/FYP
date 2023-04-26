@@ -11,9 +11,11 @@ public class BlockModel {
     String daysAfter;
     String threeDays;
     String key;
+    String status;
+    String actualFI;
 
 
-    public BlockModel(String block, String variety, String propagator, String date, String daysAfter, String threeDays){
+   /* public BlockModel(String block, String variety, String propagator, String date, String daysAfter, String threeDays){
         this.block = block;
         this.variety = variety;
         this.propagator = propagator;
@@ -21,12 +23,29 @@ public class BlockModel {
         this.daysAfter = daysAfter;
         this.threeDays = threeDays;
 
-    }
-    public BlockModel(String block, String variety, String propagator, String date){
+    }*/
+ /*   public BlockModel(String block, String variety, String propagator, String date, String key, String status){
         this.block = block;
         this.variety = variety;
         this.propagator = propagator;
         this.date = date;
+        this.key = key;
+        this.status = status;
+    }*/
+    public BlockModel(String block, String variety, String propagator, String date, String status){
+        this.block = block;
+        this.variety = variety;
+        this.propagator = propagator;
+        this.date = date;
+        this.status = status;
+    }
+    public BlockModel(String block, String variety, String propagator, String date, String status, String actualFI){
+        this.block = block;
+        this.variety = variety;
+        this.propagator = propagator;
+        this.date = date;
+        this.status = status;
+        this.actualFI = actualFI;
     }
     public String getKey() {
         return key;
@@ -82,5 +101,21 @@ public class BlockModel {
 
     public void setThreeDays(String threeDays) {
         this.threeDays = threeDays;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getActualFI() {
+        return actualFI;
+    }
+
+    public void setActualFI(String actualFI) {
+        this.actualFI = actualFI;
     }
 }

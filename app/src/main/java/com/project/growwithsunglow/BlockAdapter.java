@@ -30,7 +30,7 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.MyViewHolder
     // Create new views (invoked by the layout manager)
     @Override
     public BlockAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.retrieved_layout, null));
+        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.retrieved_layout, parent, false));
     }
 
     @Override
@@ -38,6 +38,7 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.MyViewHolder
         BlockModel eventModel = myDataSet.get(position);
 
         holder.block.setText(eventModel.getBlock());
+        holder.status.setText(eventModel.getStatus());
 
 
         holder.card.setOnClickListener(new View.OnClickListener() {
@@ -48,7 +49,6 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.MyViewHolder
                 i.putExtra("Variety", myDataSet.get(holder.getAdapterPosition()).getVariety());
                 i.putExtra("Propagator", myDataSet.get(holder.getAdapterPosition()).getPropagator());
                 i.putExtra("Date", myDataSet.get(holder.getAdapterPosition()).getDate());
-                i.putExtra("Key", myDataSet.get(holder.getAdapterPosition()).getKey());
 
 
                context.startActivity(i);
@@ -73,14 +73,16 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.MyViewHolder
 
 
     static class MyViewHolder extends RecyclerView.ViewHolder{
-        private final TextView block;
+        private final TextView block, status;
         CardView card;
 
         public MyViewHolder(@NonNull View view){
             super(view);
 
             block = view.findViewById(R.id.blockCard);
+            status = view.findViewById(R.id.statusCard);
             card = view.findViewById(R.id.card);
+
         }
     }
 

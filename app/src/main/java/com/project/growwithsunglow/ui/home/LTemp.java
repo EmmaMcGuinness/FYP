@@ -1,28 +1,15 @@
 package com.project.growwithsunglow.ui.home;
 
-public class AvgTemp {
-    //int blockNo;
+public class LTemp {
     String date, temp;
 
-    public AvgTemp(String date, String temp){
-        this.date = date;
+    public LTemp(String date, String temp){
+     this.date = date;
+     this.temp = temp;
+    }
+    public LTemp(String temp){
         this.temp = temp;
-        //this.blockNo = blockNo;
-
     }
-    public AvgTemp(String temp){
-        this.temp = temp;
-
-
-    }
-
-  /*  public int getBlockNo() {
-        return blockNo;
-    }
-
-    public void setBlockNo(int blockNo) {
-        this.blockNo = blockNo;
-    }*/
 
     public String getDate() {
         return date;

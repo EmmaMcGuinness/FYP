@@ -3,6 +3,7 @@ package com.project.growwithsunglow;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,10 +18,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.project.growwithsunglow.ui.home.BlockDetails;
+import com.project.growwithsunglow.ui.home.UpdateActivity;
 
 public class RegisterUser extends AppCompatActivity {
 
-    private TextView banner, registerUser;
+    private TextView banner;
+    Button registerUser, cancelButton;
     private EditText editTextName, editTextRole, editTextEmail, editTextPassword;
     private FirebaseAuth mAuth;
 
@@ -37,18 +41,12 @@ public class RegisterUser extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        banner = (TextView) findViewById(R.id.banner);
-        banner.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(RegisterUser.this, Login.class);
-                startActivity(i);
 
-            }
-        });
 
-        registerUser = (Button) findViewById(R.id.buttonComplete);
+
+        registerUser = (Button) findViewById(R.id.completeButton);
         registerUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,5 +122,14 @@ public class RegisterUser extends AppCompatActivity {
 
             }
         });
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

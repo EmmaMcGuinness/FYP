@@ -3,6 +3,16 @@
 <item
     android:id="@+id/action_Download"
     android:orderInCategory ="100"
-    android:title="Download data"
+    android:title="Refresh data"
     />
+    <item
+        android:id="@+id/action_Edit"
+        android:orderInCategory ="100"
+        android:title="Edit Block"
+        />
+    <item
+        android:id="@+id/action_Delete"
+        android:orderInCategory ="100"
+        android:title="Delete Block"
+        />
 </menu>

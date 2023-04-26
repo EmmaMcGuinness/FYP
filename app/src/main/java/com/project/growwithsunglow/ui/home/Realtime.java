@@ -75,7 +75,7 @@ public class Realtime extends AppCompatActivity {
                             Cell[] row = sheet.getRow(i);
                             String date = row[0].getContents();
                             String temp = row[2].getContents();
-                            AvgTemp avgTemp = new AvgTemp(temp,date,blockNo);
+                            AvgTemp avgTemp = new AvgTemp(temp,date);
                             FirebaseDatabase.getInstance().getReference("AvgTemp").push()
                                     .setValue(avgTemp).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
@@ -116,14 +116,14 @@ public class Realtime extends AppCompatActivity {
                 for (DataSnapshot avgTemps : snapshot.child("AvgTemp").getChildren()) {
                     final String getDate = avgTemps.child("date").getValue(String.class);
                     final String getTemp = avgTemps.child("temp").getValue(String.class);
-                    final int getBlockNo = avgTemps.child("blockNo").getValue(Integer.class);
+                    //final int getBlockNo = avgTemps.child("blockNo").getValue(Integer.class);
 
 
-                    AvgTemp avgTemp = new AvgTemp(getDate, getTemp, getBlockNo);
+                    AvgTemp avgTemp = new AvgTemp(getDate, getTemp);
                     avgTempList.add(avgTemp);
 
                 }
-                recyclerView.setAdapter(new TempAdapter(Realtime.this, avgTempList));
+               // recyclerView.setAdapter(new TempAdapter(Realtime.this, avgTempList));
 
             }
 

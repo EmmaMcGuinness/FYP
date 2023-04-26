@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.project.growwithsunglow.GdhModel;
 import com.project.growwithsunglow.R;
 
 import java.util.ArrayList;
@@ -17,27 +18,28 @@ import java.util.ArrayList;
 public class TempAdapter extends RecyclerView.Adapter<TempAdapter.MyViewHolder> {
     private final Context context;
     private ArrayList<AvgTemp> myDataSet;
+    private ArrayList<GdhModel> dailyGdhList;
 
 
-    //constructor
-    public TempAdapter(Context context, ArrayList<AvgTemp> myDataSet) {
+    public TempAdapter(Context context, ArrayList<GdhModel> dailyGdhList){
         this.context = context;
-        this.myDataSet = myDataSet;
+        this.dailyGdhList = dailyGdhList;
+
     }
 
 
     // Create new views (invoked by the layout manager)
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_layout, null));
+        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_layout, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        AvgTemp eventModel = myDataSet.get(position);
+        GdhModel gdhModel = dailyGdhList.get(position);
 
-        holder.date.setText(eventModel.getDate());
-        holder.temp.setText(eventModel.getTemp());
+        holder.date.setText(gdhModel.getDate());
+        holder.gdh.setText(gdhModel.getGdh());
 
         holder.card.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,24 +64,24 @@ public class TempAdapter extends RecyclerView.Adapter<TempAdapter.MyViewHolder> 
     @Override
     public int getItemCount() {
 
-        return myDataSet.size();
+        return dailyGdhList.size();
     }
 
-    public void searchDataList(ArrayList<AvgTemp> searchList){
-        myDataSet = searchList;
+    public void searchDataList(ArrayList<GdhModel> searchList){
+        dailyGdhList = searchList;
         notifyDataSetChanged();
     }
 
 
     static class MyViewHolder extends RecyclerView.ViewHolder{
-        private final TextView date, temp;
+        private final TextView date, gdh;
         CardView card;
 
         public MyViewHolder(@NonNull View view){
             super(view);
 
             date = view.findViewById(R.id.date);
-            temp = view.findViewById(R.id.temperature);
+            gdh = view.findViewById(R.id.gdh);
             card = view.findViewById(R.id.card);
         }
     }

@@ -1,57 +1,125 @@
 package com.project.growwithsunglow.ui.dashboard;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 import com.project.growwithsunglow.R;
 
-public class Graph extends AppCompatActivity {
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
-    // creating a variable
-    // for our graph view.
-    GraphView graphView;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.graph_layout);
-        // on below line we are initializing our graph view.
-        graphView = findViewById(R.id.idGraphView);
+public class Graph extends Fragment {
 
-        // on below line we are adding data to our graph view.
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[]{
-                // on below line we are adding
-                // each point on our x and y axis.
-                /*new DataPoint(0, 1),
-                new DataPoint(1, 3),
-                new DataPoint(2, 4),
-                new DataPoint(3, 9),
-                new DataPoint(4, 6),
-                new DataPoint(5, 3),
-                new DataPoint(6, 6),
-                new DataPoint(7, 1),
-                new DataPoint(8, 2)*/
+    private LineChart mChart;
+    float floatGdh1, floatGdh2;
+    Toolbar toolbar;
+    ArrayList<Entry> gdhData1 = new ArrayList<>();
+    ArrayList<Entry> gdhData2 = new ArrayList<>();
+
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.graph_layout, container, false);
+
+        mChart = view.findViewById(R.id.chart1);
+
+
+        mChart.setTouchEnabled(true);
+        mChart.setDragEnabled(true);
+        mChart.setScaleEnabled(true);
+        mChart.setPinchZoom(true);
+        mChart.getDescription().setEnabled(false);
+
+        XAxis xAxis = mChart.getXAxis();
+        xAxis.setValueFormatter(new DateValueFormatter("dd/MM/yyyy"));
+
+
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
+        xAxis.setLabelRotationAngle(-45);
+
+
+        getBlocksGDHDates();
+
+        return view;
+    }
+
+    private void getBlocksGDHDates() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        Query getGDH = databaseReference.orderByChild("date");
+
+        getGDH.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                gdhData1.clear();
+
+                for (DataSnapshot dataSnapshot : snapshot.child("Blocks").child(String.valueOf(1)).child("GDH").getChildren()) {
+                    String gdhDate1 = dataSnapshot.child("date").getValue(String.class);
+                    String gdh1 = dataSnapshot.child("gdh").getValue(String.class);
+                    //String gdhDate2 = dataSnapshot.child(String.valueOf(2)).child("date").getValue(String.class);
+                    //String gdh2 = dataSnapshot.child(String.valueOf(2)).child("gdh").getValue(String.class);
+
+                    floatGdh1 = Float.parseFloat(gdh1);
+                   // floatGdh2 = Float.parseFloat(gdh2);
+
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                    Date date1 = null;
+                  //  Date date2 = null;
+                    try{
+                        date1 = dateFormat.parse(gdhDate1);
+                      //  date2 = dateFormat.parse(gdhDate2);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+                    gdhData1.add(new Entry(date1.getTime(), floatGdh1));
+                  //  gdhData2.add(new Entry(date2.getTime(), floatGdh2));
+                }
+                LineDataSet dataSet1 = new LineDataSet(gdhData1, "Block 1 GDH");
+                dataSet1.setColor(Color.RED);
+                dataSet1.setLineWidth(2f);
+                dataSet1.setDrawCircles(false);
+                dataSet1.setDrawValues(false);
+
+
+                LineData lineData = new LineData(dataSet1);
+                lineData.setDrawValues(false);
+
+                mChart.setData(lineData);
+                mChart.invalidate();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
         });
 
-        // after adding data to our line graph series.
-        // on below line we are setting
-        // title for our graph view.
-        graphView.setTitle("My Graph View");
-
-        // on below line we are setting
-        // text color to our graph view.
-        graphView.setTitleColor(R.color.purple_200);
-
-        // on below line we are setting
-        // our title text size.
-        graphView.setTitleTextSize(18);
-
-        // on below line we are adding
-        // data series to our graph view.
-        graphView.addSeries(series);
     }
+
+
 }

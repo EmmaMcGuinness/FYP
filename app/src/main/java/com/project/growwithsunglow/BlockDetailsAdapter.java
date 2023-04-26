@@ -27,7 +27,7 @@ public class BlockDetailsAdapter extends RecyclerView.Adapter<BlockDetailsAdapte
     // Create new views (invoked by the layout manager)
     @Override
     public BlockDetailsAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_layout, null));
+        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_layout, parent, false));
     }
 
     @Override

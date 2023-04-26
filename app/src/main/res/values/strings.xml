@@ -12,6 +12,25 @@
     <string name="add_a_new_block">Add a new Block</string>
     <string name="planted">Variety</string>
     <string name="block">Block</string>
+    <string name="Update">Update</string>
+    <string name="update_block">Update Block</string>
 
+    <string-array name="blocks">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="varieties">
+        <item>Malling Centenary</item>
+        <item>Elsanta</item>
+    </string-array>
+
+    <string-array name="propagators">
+        <item>VDN</item>
+        <item>DJP</item>
+    </string-array>
 
 </resources>
