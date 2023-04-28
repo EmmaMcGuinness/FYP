@@ -35,7 +35,6 @@ import com.project.growwithsunglow.R;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -56,10 +55,10 @@ import jxl.read.biff.BiffException;
 public class BlockDetails extends AppCompatActivity {
     TextView planted, daysAfter, gdhRequired, gdhReached, gdhDateReached,
             numDaysLeft, predicted, tillTarget, chillHrs, gdhACReached, gdhDateACReached,
-            predictedHarvest, chillDate, daysLeftAC;
+            predictedHarvest, chillDate, daysLeftAC, actualFI;
     String block, variety, propagator, current, dateAfter,
             fDateAfter, gdhR, reachedDate, finalDate , finalTemp, dateCalGdh,dateTrackGdh = "", chillD ="",
-            gdhAcDate = "", floweringStatus = "";
+            gdhAcDate = "", floweringStatus = "",  nStatus;
     LocalDate fDate, thirdDate, reachedGDHDate, date1, date2, date3, reachedChill, loopDateGDHAC;
     double gdhLeft, gdhACLeft, gdh = 0.0, sumTrackGdh = 0, sumGDHSinceChill = 0, sumDaysLeftAC =0,
             totalDaysLeftAC, daysLeft, sumGetDaysLeft =0, totalGetDaysLeft, getDaysLeft;;
@@ -110,6 +109,7 @@ public class BlockDetails extends AppCompatActivity {
         chillDate = findViewById(R.id.chillDateCard);
         predictedHarvest = findViewById(R.id.predictedHarvestCard);
         daysLeftAC = findViewById(R.id.daysLeftACCard);
+        //actualFI = findViewById(R.id.actualCard);
         progressBar = findViewById(R.id.progressBar);
 
 
@@ -154,6 +154,7 @@ public class BlockDetails extends AppCompatActivity {
 
         pullTempData();
         pullGDHData();
+        //pullActualFI();
         gdhR = "14500";
         gdhRequired.setText(gdhR);
 
@@ -170,10 +171,6 @@ public class BlockDetails extends AppCompatActivity {
 
 
     }
-
-
-
-
 
 
     private void downloadData() {
@@ -239,7 +236,7 @@ public class BlockDetails extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 datesList.clear();
 
-                for (DataSnapshot avgTemps : snapshot.child("Blocks").child(block).child("AverageTemp").getChildren()) {
+                for (DataSnapshot avgTemps : snapshot.child("AverageTemp").child(block).getChildren()) {
                     final String getDate = avgTemps.child("date").getValue(String.class);
                     //Log.d("dates", getDate);
                     datesList.add(getDate);
@@ -259,7 +256,7 @@ public class BlockDetails extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 gdhDatesList.clear();
 
-                for (DataSnapshot gdh : snapshot.child("Blocks").child(block).child("GDH").getChildren()) {
+                for (DataSnapshot gdh : snapshot.child("GDH").child(block).getChildren()) {
                     final String getDate = gdh.child("date").getValue(String.class);
                     gdhDatesList.add(getDate);
 
@@ -272,6 +269,23 @@ public class BlockDetails extends AppCompatActivity {
 
             }
         });
+    }
+    private void pullActualFI() {
+        databaseReference.child("Blocks").child(block).child("ActualFI").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                     String getAFIDate = snapshot.getValue(String.class);
+                     actualFI.setText(getAFIDate);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
 
@@ -290,12 +304,12 @@ public class BlockDetails extends AppCompatActivity {
             downloadData();
         } else if (id == R.id.action_Edit) {
 
-            Intent i = new Intent(BlockDetails.this, UpdateActivity.class)
+            Intent i = new Intent(BlockDetails.this, UpdateBlock.class)
                     .putExtra("Block", block)
                     .putExtra("Planted", planted.getText().toString())
                     .putExtra("Variety", variety)
                     .putExtra("Propagator", propagator)
-                    .putExtra("Status", status);
+                    .putExtra("Status", nStatus);
             startActivity(i);
         }else if (id == R.id.action_Delete){
 
@@ -321,6 +335,16 @@ public class BlockDetails extends AppCompatActivity {
                 dialog.dismiss();
                 Toast.makeText(BlockDetails.this, "Block deleted", Toast.LENGTH_SHORT).show();
                 databaseReference.child("Blocks").child(block).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                    }
+                });
+                databaseReference.child("GDH").child(block).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                    }
+                });
+                databaseReference.child("AverageTemp").child(block).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         finish();
@@ -357,7 +381,7 @@ public class BlockDetails extends AppCompatActivity {
                                 avgTempList.add(avgTemp);
                                 if (!datesList.contains(current)) {
                                     // Log.d("DateList", "Date is not in database");
-                                    FirebaseDatabase.getInstance().getReference("Blocks").child(block).child("AverageTemp").push()
+                                    FirebaseDatabase.getInstance().getReference("AverageTemp").child(block).push()
                                             .setValue(avgTemp).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
@@ -379,7 +403,7 @@ public class BlockDetails extends AppCompatActivity {
                             avgTempList.add(avgTemp);
                             if (!datesList.contains(current)) {
                                 // Log.d("DateList", "Date is not in database");
-                                FirebaseDatabase.getInstance().getReference("Blocks").child(block).child("AverageTemp").push()
+                                FirebaseDatabase.getInstance().getReference("AverageTemp").child(block).push()
                                         .setValue(avgTemp).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
@@ -432,18 +456,14 @@ public class BlockDetails extends AppCompatActivity {
                 date1 = LocalDate.parse(avgTempList.get(i).getDate().trim(), formatter);
                 if (date1.equals(fDate)) {
                     if (loopTemp1 < 16.0) {
-                        //  threeDaysAfter.setBackgroundColor(ContextCompat.getColor(BlockDetails.this, R.color.orange));
                         if (i + 1 < avgTempList.size()) {
                             loopTemp2 = Float.parseFloat(avgTempList.get(i + 1).getTemp());
                             date2 = LocalDate.parse(avgTempList.get(i + 1).getDate().trim(), formatter);
-
                             if (date1.plusDays(1).equals(date2) && loopTemp2 < 16.0) {
-                                // threeDaysAfter.setBackgroundColor(Color.YELLOW);
                                 if (i + 2 < avgTempList.size()) {
                                     loopTemp3 = Float.parseFloat(avgTempList.get(i + 2).getTemp());
                                     date3 = LocalDate.parse(avgTempList.get(i + 2).getDate().trim(), formatter);
                                     if (date2.plusDays(1).equals(date3) && loopTemp3 < 16.0) {
-                                        //  Log.d("Colour", "Green Temp:" + loopTemp3 + " Date: " + date3);
                                         runOnUiThread(() -> {
                                                     threeDaysAfter.setBackgroundColor(Color.GREEN);
                                                     thirdDate = date3;
@@ -458,7 +478,6 @@ public class BlockDetails extends AppCompatActivity {
                                         fDate = fDate.plusDays(1);
                                     }
                                 } else {
-                                    //  Log.d("Colour", "Green Temp: Not available");
                                     runOnUiThread(() -> {
                                         threeDaysAfter.setBackgroundColor(Color.YELLOW);
                                         progressBar.setVisibility(View.GONE);
@@ -472,7 +491,6 @@ public class BlockDetails extends AppCompatActivity {
 
                             }
                         } else {
-                            // Log.d("Colour", "Yellow Temp: Not available");
                             runOnUiThread(() -> {
                                 threeDaysAfter.setBackgroundColor(ContextCompat.getColor(BlockDetails.this, R.color.orange));
                                 progressBar.setVisibility(View.GONE);
@@ -480,7 +498,6 @@ public class BlockDetails extends AppCompatActivity {
                             return;
                         }
                     } else {
-                        //  Log.d("Colour", "Red 1 " + loopTemp1);
                         fDate = fDate.plusDays(1);
                     }
                 }
@@ -491,8 +508,9 @@ public class BlockDetails extends AppCompatActivity {
         }
 
         private void setStatus(String newStatus) {
-            Log.d("setStatus", "here");
-                statusDatabase.child(block).child("status").setValue(newStatus)
+        nStatus = newStatus;
+        Log.d("setStatus", "here");
+                statusDatabase.child(block).child("status").setValue(nStatus)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -520,7 +538,7 @@ public class BlockDetails extends AppCompatActivity {
                                     // Log.d("gdh ", "already in database");
                                 } else if (!gdhDatesList.contains(dateCalGdh)) {
                                     //  Log.d("gdh", "Not in database " + date);
-                                    FirebaseDatabase.getInstance().getReference("Blocks").child(block).child("GDH").push()
+                                    FirebaseDatabase.getInstance().getReference("GDH").child(block).push()
                                             .setValue(gdh1).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
@@ -555,7 +573,7 @@ public class BlockDetails extends AppCompatActivity {
 
                 dailyGdhList.clear();
 
-                for (DataSnapshot gdhs : snapshot.child("Blocks").child(block).child("GDH").getChildren()) {
+                for (DataSnapshot gdhs : snapshot.child("GDH").child(block).getChildren()) {
                     final String getDate = gdhs.child("date").getValue(String.class);
                     final String getGdh = gdhs.child("gdh").getValue(String.class);
                     GdhModel gdh = new GdhModel(getDate, getGdh);
@@ -709,7 +727,7 @@ public class BlockDetails extends AppCompatActivity {
                                 gdhDateACReached.setText(gdhAcDate);
                                 gdhACReached.setTextColor(Color.RED);
                             });
-                            if (sumGDHSinceChill >= 16000) {
+                            if (sumGDHSinceChill >= 18000) {
                                 runOnUiThread(() -> {
                                     gdhACReached.setTextColor(ContextCompat.getColor(BlockDetails.this, R.color.green));
                                     predictedHarvest.setText(gdhAcDate);
@@ -723,8 +741,8 @@ public class BlockDetails extends AppCompatActivity {
                             }
                         }
                     }
-                    gdhACLeft = Math.round((16000 - sumGDHSinceChill) * 100.0) / 100.0;
-                    if (sumGDHSinceChill < 16000) {
+                    gdhACLeft = Math.round((18000 - sumGDHSinceChill) * 100.0) / 100.0;
+                    if (sumGDHSinceChill < 18000) {
                         getDaysLeftAC();
                         runOnUiThread(() -> {
                             Toast.makeText(BlockDetails.this, "In the post-chilling stage", Toast.LENGTH_LONG).show();

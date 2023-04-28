@@ -72,7 +72,7 @@ public class Graph4 extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     gdhData1.clear();
 
-                    for (DataSnapshot dataSnapshot : snapshot.child("Blocks").child(String.valueOf(4)).child("GDH").getChildren()) {
+                    for (DataSnapshot dataSnapshot : snapshot.child("GDH").child(String.valueOf(4)).getChildren()) {
                         String gdhDate1 = dataSnapshot.child("date").getValue(String.class);
                         String gdh1 = dataSnapshot.child("gdh").getValue(String.class);
                         //String gdhDate2 = dataSnapshot.child(String.valueOf(2)).child("date").getValue(String.class);

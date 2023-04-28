@@ -210,6 +210,7 @@ public class HomeFragment extends Fragment {
                 }
 
                 status = "pre flower induction";
+
                 BlockModel blockModel2 = new BlockModel(block, variety, propagator, date, status);
                 FirebaseDatabase.getInstance().getReference("Blocks").child(block)
                         .setValue(blockModel2).addOnCompleteListener(new OnCompleteListener<Void>() {

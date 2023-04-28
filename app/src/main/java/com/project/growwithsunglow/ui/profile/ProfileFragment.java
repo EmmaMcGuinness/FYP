@@ -2,6 +2,7 @@ package com.project.growwithsunglow.ui.profile;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,11 +33,13 @@ import com.project.growwithsunglow.User;
 
 import com.project.growwithsunglow.databinding.FragmentProfileBinding;
 
-public class ProfileFragment extends Fragment  {
+public class ProfileFragment extends Fragment {
 
     private FragmentProfileBinding binding;
     TextView profileName, profileRole, profileEmail, profilePassword;
     private FirebaseUser user;
+    FirebaseAuth firebaseAuth;
+    FirebaseAuth mAuth;
     private String userID;
     EditText editName, editRole, editEmail, editPassword;
     Button editProfile, saveButton, cancelButton, logout;
@@ -54,6 +58,7 @@ public class ProfileFragment extends Fragment  {
         editProfile = view.findViewById(R.id.editProfile);
         logout = view.findViewById(R.id.logout);
 
+        mAuth = FirebaseAuth.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getUid();
         DatabaseReference fireDB = FirebaseDatabase.getInstance().getReference("Users").child(userID);
@@ -67,6 +72,7 @@ public class ProfileFragment extends Fragment  {
                 profilePassword.setText(userObj.getPassword());
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
             }
@@ -74,7 +80,7 @@ public class ProfileFragment extends Fragment  {
         editProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              editProfile();
+                editProfile();
             }
 
         });
@@ -87,10 +93,12 @@ public class ProfileFragment extends Fragment  {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
 
+
             }
         });
         return view;
     }
+
     private void editProfile() {
         AlertDialog.Builder myDialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -103,11 +111,11 @@ public class ProfileFragment extends Fragment  {
 
         fireDB = FirebaseDatabase.getInstance().getReference("Users").child(userID);
 
-        editName = myView.findViewById(R.id.name);
-        editRole =  myView.findViewById(R.id.role);
-        editEmail =  myView.findViewById(R.id.email);
-        editPassword =  myView.findViewById(R.id.password);
-        saveButton =  myView.findViewById(R.id.saveButton);
+        editName = myView.findViewById(R.id.nameEdit);
+        editRole = myView.findViewById(R.id.roleEdit);
+        editEmail = myView.findViewById(R.id.emailEdit);
+        editPassword = myView.findViewById(R.id.passwordEdit);
+        saveButton = myView.findViewById(R.id.saveButton);
         cancelButton = myView.findViewById(R.id.cancelButton);
 
         editName.setText(profileName.getText().toString());
@@ -117,30 +125,44 @@ public class ProfileFragment extends Fragment  {
 
 
 
-        nameUser = editName.getText().toString().trim();
-        roleUser = editRole.getText().toString().trim();
-        emailUser = editEmail.getText().toString().trim();
-        passwordUser = editPassword.getText().toString().trim();
 
-        User user = new User(nameUser, roleUser, emailUser, passwordUser);
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fireDB.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+                nameUser = editName.getText().toString().trim();
+                roleUser = editRole.getText().toString().trim();
+                emailUser = editEmail.getText().toString().trim();
+                passwordUser = editPassword.getText().toString().trim();
+
+                User user1 = new User(nameUser, roleUser, emailUser, passwordUser);
+                Log.d("Profile", emailUser + " " + passwordUser + " " + roleUser + " " + nameUser);
+                FirebaseDatabase.getInstance().getReference("Users")
+                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .setValue(user1).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(getActivity(), "Updated", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getActivity(), e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                user.updateEmail(emailUser);
+                user.updatePassword(passwordUser).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            Toast.makeText(getActivity(), "Updated", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getActivity(), e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                    public void onSuccess(Void unused) {
+                        Intent i = new Intent(getActivity(), Login.class);
+                        startActivity(i);
                     }
                 });
+
             }
         });
 
@@ -152,6 +174,8 @@ public class ProfileFragment extends Fragment  {
         });
 
     }
+
+
 
     @Override
     public void onDestroyView() {
