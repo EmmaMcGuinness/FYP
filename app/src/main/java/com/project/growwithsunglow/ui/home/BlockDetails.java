@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -30,7 +29,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
-import com.project.growwithsunglow.GdhModel;
 import com.project.growwithsunglow.R;
 
 import java.io.File;
@@ -55,21 +53,17 @@ import jxl.read.biff.BiffException;
 public class BlockDetails extends AppCompatActivity {
     TextView planted, daysAfter, gdhRequired, gdhReached, gdhDateReached,
             numDaysLeft, predicted, tillTarget, chillHrs, gdhACReached, gdhDateACReached,
-            predictedHarvest, chillDate, daysLeftAC, actualFI;
+            predictedHarvest, chillDate, daysLeftAC;
     String block, variety, propagator, current, dateAfter,
             fDateAfter, gdhR, reachedDate, finalDate , finalTemp, dateCalGdh,dateTrackGdh = "", chillD ="",
-            gdhAcDate = "", floweringStatus = "",  nStatus;
+            gdhAcDate = "", floweringStatus = "",  nStatus, chillMin = "/800", gdhAcMin= "/18000";
     LocalDate fDate, thirdDate, reachedGDHDate, date1, date2, date3, reachedChill, loopDateGDHAC;
     double gdhLeft, gdhACLeft, gdh = 0.0, sumTrackGdh = 0, sumGDHSinceChill = 0, sumDaysLeftAC =0,
             totalDaysLeftAC, daysLeft, sumGetDaysLeft =0, totalGetDaysLeft, getDaysLeft;;
     int blockNum, countChill = 0;
     float sum, average;
     float countAvg = 1;
-    boolean reachedTheGdh = false;
     Button threeDaysAfter;
-    String key = "";
-    RecyclerView recyclerView;
-    RecyclerView.LayoutManager layoutManager;
     AsyncHttpClient client;
     SimpleDateFormat sdf, sdf2;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -84,9 +78,7 @@ public class BlockDetails extends AppCompatActivity {
     DateTimeFormatter formatter, formatter2;
     AvgTemp avgTemp = null;
     float loopTemp1, loopTemp2, loopTemp3;
-    TempAdapter tempAdapter;
     private String  status = "";
-    private boolean isUpdating = false;
     ProgressBar progressBar;
 
     @Override
@@ -109,7 +101,6 @@ public class BlockDetails extends AppCompatActivity {
         chillDate = findViewById(R.id.chillDateCard);
         predictedHarvest = findViewById(R.id.predictedHarvestCard);
         daysLeftAC = findViewById(R.id.daysLeftACCard);
-        //actualFI = findViewById(R.id.actualCard);
         progressBar = findViewById(R.id.progressBar);
 
 
@@ -126,7 +117,6 @@ public class BlockDetails extends AppCompatActivity {
             variety = bundle.getString("Variety");
             propagator = bundle.getString("Propagator");
             block = bundle.getString("Block");
-            //key = bundle.getString("key");
 
         }
         Log.d("Edit ", block + " " +planted.getText().toString() + " " + variety + " " + propagator+ " "+ status);
@@ -154,7 +144,6 @@ public class BlockDetails extends AppCompatActivity {
 
         pullTempData();
         pullGDHData();
-        //pullActualFI();
         gdhR = "14500";
         gdhRequired.setText(gdhR);
 
@@ -238,7 +227,6 @@ public class BlockDetails extends AppCompatActivity {
 
                 for (DataSnapshot avgTemps : snapshot.child("AverageTemp").child(block).getChildren()) {
                     final String getDate = avgTemps.child("date").getValue(String.class);
-                    //Log.d("dates", getDate);
                     datesList.add(getDate);
                 }
 
@@ -270,23 +258,7 @@ public class BlockDetails extends AppCompatActivity {
             }
         });
     }
-    private void pullActualFI() {
-        databaseReference.child("Blocks").child(block).child("ActualFI").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                     String getAFIDate = snapshot.getValue(String.class);
-                     actualFI.setText(getAFIDate);
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-    }
 
 
 
@@ -303,7 +275,6 @@ public class BlockDetails extends AppCompatActivity {
         if (id == R.id.action_Download) {
             downloadData();
         } else if (id == R.id.action_Edit) {
-
             Intent i = new Intent(BlockDetails.this, UpdateBlock.class)
                     .putExtra("Block", block)
                     .putExtra("Planted", planted.getText().toString())
@@ -481,12 +452,16 @@ public class BlockDetails extends AppCompatActivity {
                                     runOnUiThread(() -> {
                                         threeDaysAfter.setBackgroundColor(Color.YELLOW);
                                         progressBar.setVisibility(View.GONE);
-                                        Toast.makeText(BlockDetails.this, "Pre-Flower Induction", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(BlockDetails.this, "Pre-flower Induction", Toast.LENGTH_LONG).show();
                                     });
+                                    String newStatus = "Pre-flower Induction";
+                                    setStatus(newStatus);
                                     return;
                                 }
                             } else {
-                                threeDaysAfter.setBackgroundColor(ContextCompat.getColor(BlockDetails.this, R.color.orange));
+                                runOnUiThread(() -> {
+                                    threeDaysAfter.setBackgroundColor(ContextCompat.getColor(BlockDetails.this, R.color.orange));
+                                });
                                 fDate = fDate.plusDays(1);
 
                             }
@@ -495,6 +470,8 @@ public class BlockDetails extends AppCompatActivity {
                                 threeDaysAfter.setBackgroundColor(ContextCompat.getColor(BlockDetails.this, R.color.orange));
                                 progressBar.setVisibility(View.GONE);
                             });
+                            String newStatus = "Pre-flower Induction";
+                            setStatus(newStatus);
                             return;
                         }
                     } else {
@@ -632,7 +609,7 @@ public class BlockDetails extends AppCompatActivity {
                 });
                 getDaysLeft();
 
-                String newStatus = "flower initiation";
+                String newStatus = "Flower initiation";
                 setStatus(newStatus);
             }
         });
@@ -689,7 +666,7 @@ public class BlockDetails extends AppCompatActivity {
                         runOnUiThread(() -> {
                             Toast.makeText(BlockDetails.this, "In the chilling stage", Toast.LENGTH_LONG).show();
                             progressBar.setVisibility(View.GONE);
-                            chillHrs.setText(String.valueOf(countChill));
+                            chillHrs.setText(String.valueOf(countChill) + chillMin);
                             chillDate.setText(chillD);
                             chillHrs.setTextColor(Color.RED);
                         });
@@ -698,7 +675,7 @@ public class BlockDetails extends AppCompatActivity {
                         setStatus(chillStatus);
                     }
             runOnUiThread(() -> {
-                chillHrs.setText(String.valueOf(countChill));
+                chillHrs.setText(String.valueOf(countChill) + chillMin);
             });
                 });
 
@@ -722,7 +699,7 @@ public class BlockDetails extends AppCompatActivity {
                         if (loopDateGDHAC.isAfter(reachedChill) || loopDateGDHAC.equals(reachedChill)) {
                             sumGDHSinceChill = Math.round(sumGDHSinceChill + loopGdh);
                             runOnUiThread(() -> {
-                                gdhACReached.setText(String.valueOf(sumGDHSinceChill));
+                                gdhACReached.setText(String.valueOf(sumGDHSinceChill) + gdhAcMin);
                                 gdhAcDate = loopDateGDHAC.format(formatter2);
                                 gdhDateACReached.setText(gdhAcDate);
                                 gdhACReached.setTextColor(Color.RED);
@@ -748,7 +725,7 @@ public class BlockDetails extends AppCompatActivity {
                             Toast.makeText(BlockDetails.this, "In the post-chilling stage", Toast.LENGTH_LONG).show();
                             progressBar.setVisibility(View.GONE);
                         });
-                        floweringStatus = "Post- \nChilling";
+                        floweringStatus = "Post-Chilling";
                         Log.d("Status", "flowering");
                         setStatus(floweringStatus);
 

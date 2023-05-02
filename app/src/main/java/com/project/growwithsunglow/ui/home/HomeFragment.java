@@ -26,9 +26,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.project.growwithsunglow.BlockAdapter;
-import com.project.growwithsunglow.BlockDetailsAdapter;
-import com.project.growwithsunglow.BlockModel;
 import com.project.growwithsunglow.R;
 import com.project.growwithsunglow.databinding.FragmentDashboardBinding;
 
@@ -38,17 +35,13 @@ import java.util.Calendar;
 public class HomeFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
-    Button table, realtime;
     String status, block, variety, propagator;
     private FloatingActionButton floatingActionButton;
-    private BlockDetailsAdapter blockDetailsAdapter;
     private BlockAdapter blockAdapter;
     private RecyclerView recyclerView;
-    RecyclerView.LayoutManager layoutManager;
     private DatePickerDialog picker;
     private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     private final ArrayList<BlockModel> dataSet = new ArrayList<>();
-    private ValueEventListener listener;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -80,19 +73,18 @@ public class HomeFragment extends Fragment {
         dialog.setCancelable(false);
         dialog.show();
 
-       // EditText editBlock = myView.findViewById(R.id.editTextBlock);
         Spinner sBlocks = myView.findViewById(R.id.blockNoSpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.blocks, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sBlocks.setAdapter(adapter);
         sBlocks.setEnabled(false);
-      //  EditText editVariety = myView.findViewById(R.id.editTextVariety);
+
         Spinner sVariety = myView.findViewById(R.id.varietySpinner);
         ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(getActivity(), R.array.varieties, android.R.layout.simple_spinner_item);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sVariety.setAdapter(adapter2);
         sVariety.setEnabled(false);
-      //  EditText editPropagator = myView.findViewById(R.id.editTextPropagator);
+
         Spinner sPropagator = myView.findViewById(R.id.propagatorSpinner);
         ArrayAdapter<CharSequence> adapter3 = ArrayAdapter.createFromResource(getActivity(), R.array.propagators, android.R.layout.simple_spinner_item);
         adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -171,9 +163,7 @@ public class HomeFragment extends Fragment {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*String block = editBlock.getText().toString().trim();
-                String variety = editVariety.getText().toString().trim();
-                String propagator = editPropagator.getText().toString().trim();*/
+
                 String date = editDate.getText().toString().trim();
                 Boolean blockNo = false;
                 for (BlockModel blockModel : dataSet) {
@@ -209,7 +199,7 @@ public class HomeFragment extends Fragment {
                     return;
                 }
 
-                status = "pre flower induction";
+                status = "";
 
                 BlockModel blockModel2 = new BlockModel(block, variety, propagator, date, status);
                 FirebaseDatabase.getInstance().getReference("Blocks").child(block)
@@ -255,7 +245,7 @@ public class HomeFragment extends Fragment {
                     final String getPropagator = events.child("propagator").getValue(String.class);
                     final String getDate = events.child("date").getValue(String.class);
                     final String getStatus = events.child("status").getValue(String.class);
-                  //  final String key = events.getKey();
+
 
                     BlockModel blockModel = new BlockModel(getBlock, getVariety, getPropagator, getDate, getStatus);
 

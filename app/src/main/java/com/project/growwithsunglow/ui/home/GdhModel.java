@@ -1,4 +1,4 @@
-package com.project.growwithsunglow;
+package com.project.growwithsunglow.ui.home;
 
 public class GdhModel {
     String date;

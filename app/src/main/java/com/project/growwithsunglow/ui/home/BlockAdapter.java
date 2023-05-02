@@ -1,4 +1,4 @@
-package com.project.growwithsunglow;
+package com.project.growwithsunglow.ui.home;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.project.growwithsunglow.ui.home.BlockDetails;
+import com.project.growwithsunglow.R;
 
 import java.util.ArrayList;
 
@@ -20,14 +20,12 @@ public class BlockAdapter extends RecyclerView.Adapter<BlockAdapter.MyViewHolder
     private ArrayList<BlockModel> myDataSet;
 
 
-    //constructor
     public BlockAdapter(Context context, ArrayList<BlockModel> myDataSet) {
         this.context = context;
         this.myDataSet = myDataSet;
     }
 
 
-    // Create new views (invoked by the layout manager)
     @Override
     public BlockAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.retrieved_layout, parent, false));

@@ -19,7 +19,17 @@
         android:background="@color/white"
        >
 
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@color/red"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:text="Pre-Flower Induction"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -124,7 +134,17 @@
             android:layout_height="1dp"
             android:background="@android:color/darker_gray"/>
 
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@color/red"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:text="Flower Initiation"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -158,11 +178,6 @@
                 android:textSize="15sp" />
         </LinearLayout>
 
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -206,6 +221,7 @@
                 android:textSize="15sp" />
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -286,6 +302,17 @@
             android:layout_height="1dp"
             android:background="@android:color/darker_gray"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@color/red"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:text="Chilling"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -332,6 +359,17 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@color/red"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:text="Post-Chilling"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -361,7 +399,7 @@
                 android:layout_weight="2"
                 android:text="GDH "
                 android:textColor="#000"
-                android:textSize="15sp" />
+                android:textSize="13sp" />
             <TextView
                 android:id="@+id/gdhACReachedDate"
                 android:layout_width="wrap_content"
@@ -372,7 +410,7 @@
                 android:padding="5dp"
                 android:text="DATE"
                 android:textColor="#000"
-                android:textSize="15sp" />
+                android:textSize="13sp" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -405,6 +443,21 @@
                 android:textColor="#000"
                 android:textSize="15sp" />
         </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@color/red"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:text="Harvest"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

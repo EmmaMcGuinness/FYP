@@ -3,6 +3,7 @@ package com.project.growwithsunglow.ui.profile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,14 +32,12 @@ import com.project.growwithsunglow.Login;
 import com.project.growwithsunglow.R;
 import com.project.growwithsunglow.User;
 
-import com.project.growwithsunglow.databinding.FragmentProfileBinding;
 
 public class ProfileFragment extends Fragment {
 
-    private FragmentProfileBinding binding;
+
     TextView profileName, profileRole, profileEmail, profilePassword;
     private FirebaseUser user;
-    FirebaseAuth firebaseAuth;
     FirebaseAuth mAuth;
     private String userID;
     EditText editName, editRole, editEmail, editPassword;
@@ -135,6 +134,39 @@ public class ProfileFragment extends Fragment {
                 roleUser = editRole.getText().toString().trim();
                 emailUser = editEmail.getText().toString().trim();
                 passwordUser = editPassword.getText().toString().trim();
+                if (nameUser.isEmpty()) {
+                    editName.setError("Name is required");
+                    editName.requestFocus();
+                    return;
+                }
+
+                if (roleUser.isEmpty()) {
+                    editRole.setError("Role is required");
+                    editRole.requestFocus();
+                    return;
+                }
+
+                if (emailUser.isEmpty()) {
+                    editEmail.setError("Email is required");
+                    editEmail.requestFocus();
+                    return;
+                }
+                if (!Patterns.EMAIL_ADDRESS.matcher(emailUser).matches()) {
+                    editEmail.setError("Please provide valid email");
+                    editEmail.requestFocus();
+                    return;
+
+                }
+                if (passwordUser.isEmpty()) {
+                    editPassword.setError("Password is required");
+                    editPassword.requestFocus();
+                    return;
+                }
+                if (passwordUser.length() < 6) {
+                    editPassword.setError("Password must be more than 6 characters ");
+                    editPassword.requestFocus();
+                    return;
+                }
 
                 User user1 = new User(nameUser, roleUser, emailUser, passwordUser);
                 Log.d("Profile", emailUser + " " + passwordUser + " " + roleUser + " " + nameUser);
@@ -154,7 +186,14 @@ public class ProfileFragment extends Fragment {
                             }
                         });
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                user.updateEmail(emailUser);
+                user.updateEmail(emailUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+
+                        Intent i = new Intent(getActivity(), Login.class);
+                        startActivity(i);
+                    }
+                });
                 user.updatePassword(passwordUser).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -177,9 +216,4 @@ public class ProfileFragment extends Fragment {
 
 
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
 }

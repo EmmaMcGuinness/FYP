@@ -21,8 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterUser extends AppCompatActivity {
 
-    private TextView banner;
-    Button registerUser, cancelButton;
+    Button registerUser;
     private EditText editTextName, editTextRole, editTextEmail, editTextPassword;
     private FirebaseAuth mAuth;
 
@@ -104,7 +103,7 @@ public class RegisterUser extends AppCompatActivity {
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()) {
                                                         Toast.makeText(RegisterUser.this, "User successfully registered", Toast.LENGTH_LONG).show();
-                                                        Intent i = new Intent(RegisterUser.this, MainActivity.class);
+                                                        Intent i = new Intent(RegisterUser.this, Login.class);
                                                         startActivity(i);
                                                     } else {
                                                         Toast.makeText(RegisterUser.this, "User not registered", Toast.LENGTH_LONG).show();

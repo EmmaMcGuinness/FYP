@@ -19,29 +19,24 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
+
 import com.google.firebase.database.FirebaseDatabase;
-import com.project.growwithsunglow.BlockModel;
 import com.project.growwithsunglow.R;
 
 import java.util.Calendar;
 
 public class UpdateBlock extends AppCompatActivity {
     Button updateButton, cancelButton;
-    EditText editDate, editActualFIDate;
-    Spinner updateVariety, updatePropagator;
-    String block, variety, propagator, planted, status, updateB, updateV, updateProp, updatePlant;
+    EditText editDate;
+    String variety, propagator, status, updateB, updateV, updateProp, updatePlant;
     private DatePickerDialog picker;
 
-
-    DatabaseReference databaseReference;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_block);
 
        editDate = findViewById(R.id.editTextDate);
-       //editActualFIDate = findViewById(R.id.actualFIDate);
 
         updateButton = findViewById(R.id.update_button);
         cancelButton = findViewById(R.id.cancel_button);
@@ -54,7 +49,7 @@ public class UpdateBlock extends AppCompatActivity {
         status= intent.getStringExtra("Status");
 
         Log.d("Edit", updateB + " " + updateV + " " + updateProp + " " + status + " "+ updatePlant);
-        //updateBlock.setText(updateB);
+
         editDate.setText(updatePlant);
 
 
@@ -64,13 +59,12 @@ public class UpdateBlock extends AppCompatActivity {
     }
     private void updateData() {
 
-        //  EditText editVariety = myView.findViewById(R.id.editTextVariety);
         Spinner sVariety = findViewById(R.id.varietySpinner);
         ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(UpdateBlock.this, R.array.varieties, android.R.layout.simple_spinner_item);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sVariety.setAdapter(adapter2);
         sVariety.setEnabled(false);
-        //  EditText editPropagator = myView.findViewById(R.id.editTextPropagator);
+
         Spinner sPropagator = findViewById(R.id.propagatorSpinner);
         ArrayAdapter<CharSequence> adapter3 = ArrayAdapter.createFromResource(UpdateBlock.this, R.array.propagators, android.R.layout.simple_spinner_item);
         adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -96,24 +90,7 @@ public class UpdateBlock extends AppCompatActivity {
                 picker.show();
             }
         });
-       /* editActualFIDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                int month = calendar.get(Calendar.MONTH);
-                int year = calendar.get(Calendar.YEAR);
 
-                picker = new DatePickerDialog(UpdateBlock.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
-                        editActualFIDate.setText(dayOfMonth + "/"+ (month + 1)+ "/"+ year);
-
-                    }
-                }, year, month, day);
-                picker.show();
-            }
-        });*/
         sVariety.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -146,7 +123,6 @@ public class UpdateBlock extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String date = editDate.getText().toString().trim();
-               // String actualFI = editActualFIDate.getText().toString().trim();
 
                 BlockModel blockModel2 = new BlockModel(updateB, variety, propagator, date, status);
                 if (!sVariety.isEnabled()) {
@@ -170,13 +146,13 @@ public class UpdateBlock extends AppCompatActivity {
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
                                     Toast.makeText(UpdateBlock.this, "Block successfully updated", Toast.LENGTH_LONG).show();
+                                    finish();
                                 } else {
                                     Toast.makeText(UpdateBlock.this, "Block not successfully updated", Toast.LENGTH_LONG).show();
                                 }
 
                             }
                         });
-                finish();
 
             }
         });

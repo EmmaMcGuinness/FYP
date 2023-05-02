@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -29,19 +30,21 @@ import java.util.Date;
 
 public class Graph5 extends Fragment {
 
-        private LineChart mChart;
-        float floatGdh1, floatGdh2;
-        Toolbar toolbar;
-        ArrayList<Entry> gdhData1 = new ArrayList<>();
-        ArrayList<Entry> gdhData2 = new ArrayList<>();
+    private LineChart mChart;
+    float floatGdh1;
+    TextView propagator, variety;
+
+    ArrayList<Entry> gdhData1 = new ArrayList<>();
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
         public View onCreateView(@NonNull LayoutInflater inflater,
                                  ViewGroup container, Bundle savedInstanceState) {
 
-            View view = inflater.inflate(R.layout.graph2_layout, container, false);
+            View view = inflater.inflate(R.layout.graph5_layout, container, false);
 
             mChart = view.findViewById(R.id.chart1);
-
+            propagator = view.findViewById(R.id.propagatorCard);
+            variety = view.findViewById(R.id.varietyCard);
 
             mChart.setTouchEnabled(true);
             mChart.setDragEnabled(true);
@@ -57,14 +60,32 @@ public class Graph5 extends Fragment {
             xAxis.setGranularity(1f);
             xAxis.setLabelRotationAngle(-45);
 
-
+            getPropAndVariety();
             getBlocksGDHDates();
 
             return view;
         }
+    private void getPropAndVariety() {
+        databaseReference.child("Blocks").child(String.valueOf(5)).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                String getVariety = snapshot.child("variety").getValue(String.class);
+                String getPropagator = snapshot.child("propagator").getValue(String.class);
+                variety.setText(getVariety);
+                propagator.setText(getPropagator);
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 
         private void getBlocksGDHDates() {
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
             Query getGDH = databaseReference.orderByChild("date");
 
             getGDH.addValueEventListener(new ValueEventListener() {
@@ -75,23 +96,21 @@ public class Graph5 extends Fragment {
                     for (DataSnapshot dataSnapshot : snapshot.child("GDH").child(String.valueOf(5)).getChildren()) {
                         String gdhDate1 = dataSnapshot.child("date").getValue(String.class);
                         String gdh1 = dataSnapshot.child("gdh").getValue(String.class);
-                        //String gdhDate2 = dataSnapshot.child(String.valueOf(2)).child("date").getValue(String.class);
-                        //String gdh2 = dataSnapshot.child(String.valueOf(2)).child("gdh").getValue(String.class);
 
                         floatGdh1 = Float.parseFloat(gdh1);
-                        // floatGdh2 = Float.parseFloat(gdh2);
+
 
                         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
                         Date date1 = null;
-                        //  Date date2 = null;
+
                         try{
                             date1 = dateFormat.parse(gdhDate1);
-                            //  date2 = dateFormat.parse(gdhDate2);
+                        ;
                         }catch(Exception e){
                             e.printStackTrace();
                         }
                         gdhData1.add(new Entry(date1.getTime(), floatGdh1));
-                        //  gdhData2.add(new Entry(date2.getTime(), floatGdh2));
+
                     }
                     LineDataSet dataSet1 = new LineDataSet(gdhData1, "Block 5 GDH");
                     dataSet1.setColor(Color.RED);

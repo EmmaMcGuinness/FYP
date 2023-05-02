@@ -1,4 +1,4 @@
-package com.project.growwithsunglow;
+package com.project.growwithsunglow.ui.home;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -10,28 +10,9 @@ public class BlockModel {
     String date;
     String daysAfter;
     String threeDays;
-    String key;
     String status;
-    String actualFI;
 
 
-   /* public BlockModel(String block, String variety, String propagator, String date, String daysAfter, String threeDays){
-        this.block = block;
-        this.variety = variety;
-        this.propagator = propagator;
-        this.date = date;
-        this.daysAfter = daysAfter;
-        this.threeDays = threeDays;
-
-    }*/
- /*   public BlockModel(String block, String variety, String propagator, String date, String key, String status){
-        this.block = block;
-        this.variety = variety;
-        this.propagator = propagator;
-        this.date = date;
-        this.key = key;
-        this.status = status;
-    }*/
     public BlockModel(String block, String variety, String propagator, String date, String status){
         this.block = block;
         this.variety = variety;
@@ -39,21 +20,7 @@ public class BlockModel {
         this.date = date;
         this.status = status;
     }
-    public BlockModel(String block, String variety, String propagator, String date, String status, String actualFI){
-        this.block = block;
-        this.variety = variety;
-        this.propagator = propagator;
-        this.date = date;
-        this.status = status;
-        this.actualFI = actualFI;
-    }
-    public String getKey() {
-        return key;
-    }
 
-    public void setKey(String key) {
-        this.key = key;
-    }
 
     public String getBlock() {
         return block;
@@ -111,11 +78,4 @@ public class BlockModel {
         this.status = status;
     }
 
-    public String getActualFI() {
-        return actualFI;
-    }
-
-    public void setActualFI(String actualFI) {
-        this.actualFI = actualFI;
-    }
 }
